@@ -1,12 +1,16 @@
 import React from 'react'
 import Navbar from '../components/Navbar'
+import Hero from '../components/Hero'
+import AiTools from '../components/AiTools'
 
-const home = () => {
+const Home = () => {
   return (
     <>
-      <Navbar/>
+      <Navbar />
+      <Hero />
+      <AiTools/>
     </>
   )
 }
 
-export default home
+export default Home
