@@ -4,33 +4,53 @@ const Testimonial = () => {
 
   const cardsData = [
     {
-      image: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=200',
+      image: 'https://randomuser.me/api/portraits/women/44.jpg',
       name: 'Sarah Chen',
-      handle: '@sarahdesign',
+      handle: '@sarahchen',
       date: 'June 12, 2026',
+      rating: 5,
       review: 'QWERT.ai helped our team generate high-quality content in minutes instead of hours.'
     },
     {
-      image: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200',
+      image: 'https://randomuser.me/api/portraits/men/32.jpg',
       name: 'Michael Ross',
       handle: '@mrossdev',
       date: 'May 28, 2026',
+      rating: 4,
       review: 'The AI tools are incredibly fast and accurate. It boosted my productivity instantly.'
     },
     {
-      image: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=200&auto=format&fit=crop&q=60',
+      image: 'https://randomuser.me/api/portraits/women/68.jpg',
       name: 'Emily Watson',
       handle: '@emilywrites',
       date: 'June 05, 2026',
+      rating: 5,
       review: 'Generating blog titles and articles has never been easier. Highly recommended.'
     },
     {
-      image: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=200&auto=format&fit=crop&q=60',
+      image: 'https://randomuser.me/api/portraits/men/75.jpg',
       name: 'David Parker',
       handle: '@davidcreator',
       date: 'April 18, 2026',
+      rating: 4,
       review: 'A beautifully designed AI platform with practical tools I use every day.'
     },
+    {
+      image: 'https://randomuser.me/api/portraits/women/22.jpg',
+      name: 'Olivia Martinez',
+      handle: '@oliviam',
+      date: 'July 01, 2026',
+      rating: 5,
+      review: 'I use QWERT.ai every day for content creation and research.'
+    },
+    {
+      image: 'https://randomuser.me/api/portraits/men/51.jpg',
+      name: 'James Anderson',
+      handle: '@janderson',
+      date: 'June 22, 2026',
+      rating: 3,
+      review: 'Great tool overall, though I would love more customization options.'
+    }
   ]
 
   const CreateCard = ({ card }) => (
@@ -47,14 +67,26 @@ const Testimonial = () => {
           <h3 className="font-semibold text-gray-800">
             {card.name}
           </h3>
+
           <p className="text-sm text-gray-500">
             {card.handle}
           </p>
         </div>
       </div>
 
-      <div className="flex gap-1 mt-4 text-yellow-400">
-        ★★★★★
+      <div className="flex items-center gap-1 mt-4">
+        {[...Array(5)].map((_, index) => (
+          <span
+            key={index}
+            className={`text-lg ${
+              index < card.rating
+                ? 'text-indigo-500'
+                : 'text-gray-300'
+            }`}
+          >
+            ★
+          </span>
+        ))}
       </div>
 
       <p className="text-gray-700 text-sm mt-4 leading-6">
@@ -62,7 +94,10 @@ const Testimonial = () => {
       </p>
 
       <div className="flex justify-between items-center mt-5 text-xs text-gray-500">
-        <span>Verified User</span>
+        <span className="text-green-600 font-medium">
+          ✓ Verified User
+        </span>
+
         <span>{card.date}</span>
       </div>
 
@@ -88,6 +123,7 @@ const Testimonial = () => {
           0% {
             transform: translateX(0%);
           }
+
           100% {
             transform: translateX(-50%);
           }
