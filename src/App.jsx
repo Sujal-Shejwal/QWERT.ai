@@ -21,9 +21,9 @@ const App = () => {
 
         <Route path='ai' element={<Layout />}>
           <Route index element={<Dashboard />} />
-          <Route path='write-artical' element={<WriteArtical />} />
+           <Route path='write-article' element={<WriteArtical />} />
           <Route path='blog-titles' element={<BlogTitles />} />
-          <Route path='generate-img' element={<GenerateImg />} />
+          <Route path='generate-images' element={<GenerateImg />} />
           <Route path='remove-background' element={<RemoveBackground />} />
           <Route path='remove-object' element={<RemoveObject />} />
           <Route path='review-resume' element={<ReviewResume />} />
