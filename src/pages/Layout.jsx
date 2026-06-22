@@ -2,108 +2,62 @@ import React, { useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { assets } from '../assets/assets'
 import { Menu, X } from 'lucide-react'
+import Sidebar from '../components/Sidebar'
+import { SignIn , useUser } from '@clerk/clerk-react'
 
 const Layout = () => {
 
   const navigate = useNavigate()
   const [sidebar, setsidebar] = useState(false)
+  const {user} = useUser()
 
-  return (
-    <div className='flex min-h-screen'>
+  return user ? (
+    <div className='min-h-screen flex flex-col'>
 
-      {/* Left Sidebar */}
-      <div className='w-64  border-r border-gray-200 p-4 '>
+      {/* Top Navbar */}
+      <div className='h-16 border-b border-gray-200 px-4 flex items-center justify-between bg-white'>
 
         <img
           src={assets.logo}
           alt="logo"
-          className='w-40 cursor-pointer mb-4'
+          className='w-40 cursor-pointer'
           onClick={() => navigate('/')}
         />
 
         {
           sidebar ? (
             <X
-              className='w-6 h-6 text-gray-600 cursor-pointer mb-4 sm:hidden'
+              className='w-6 h-6 text-gray-600 cursor-pointer sm:hidden'
               onClick={() => setsidebar(false)}
             />
           ) : (
             <Menu
-              className='w-7 h-7 text-gray-600 cursor-pointer mb-4 sm:hidden'
+              className='w-7 h-7 text-gray-600 cursor-pointer sm:hidden'
               onClick={() => setsidebar(true)}
             />
           )
         }
 
-        {sidebar && (
-          <div className='flex flex-col gap-3 mt-4'>
+      </div>
 
-            <button
-              onClick={() => navigate('/ai')}
-              className='text-left hover:text-primary'
-            >
-              Dashboard
-            </button>
+      {/* Main Area */}
+      <div className='flex flex-1'>
 
-            <button
-              onClick={() => navigate('/ai/write-article')}
-              className='text-left hover:text-primary'
-            >
-              Write Article
-            </button>
+        <Sidebar
+          sidebar={sidebar}
+          setSidebar={setsidebar}
+        />
 
-            <button
-              onClick={() => navigate('/ai/blog-titles')}
-              className='text-left hover:text-primary'
-            >
-              Blog Titles
-            </button>
-
-            <button
-              onClick={() => navigate('/ai/generate-images')}
-              className='text-left hover:text-primary'
-            >
-              Generate Images
-            </button>
-
-            <button
-              onClick={() => navigate('/ai/remove-background')}
-              className='text-left hover:text-primary'
-            >
-              Remove Background
-            </button>
-
-            <button
-              onClick={() => navigate('/ai/remove-object')}
-              className='text-left hover:text-primary'
-            >
-              Remove Object
-            </button>
-
-            <button
-              onClick={() => navigate('/ai/review-resume')}
-              className='text-left hover:text-primary'
-            >
-              Review Resume
-            </button>
-
-            <button
-              onClick={() => navigate('/ai/community')}
-              className='text-left hover:text-primary'
-            >
-              Community
-            </button>
-
-          </div>
-        )}
+        <div className='flex-1 bg-[#F4F7FB] p-6'>
+          <Outlet />
+        </div>
 
       </div>
 
-      {/* Main Content */}
-      <div className='flex-1 p-6'>
-        <Outlet />
-      </div>
-
+    </div>
+  ) :(
+    <div className='flex items-center justify-center h-screen'>
+      <SignIn />
     </div>
   )
 }
