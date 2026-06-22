@@ -12,7 +12,7 @@ const Layout = () => {
     <div className='flex min-h-screen'>
 
       {/* Left Sidebar */}
-      <div className='w-64 border-r border-gray-200 p-4'>
+      <div className='w-64  border-r border-gray-200 p-4 '>
 
         <img
           src={assets.logo}
@@ -24,12 +24,12 @@ const Layout = () => {
         {
           sidebar ? (
             <X
-              className='w-7 h-7 text-gray-700 cursor-pointer mb-4'
+              className='w-6 h-6 text-gray-600 cursor-pointer mb-4 sm:hidden'
               onClick={() => setsidebar(false)}
             />
           ) : (
             <Menu
-              className='w-7 h-7 text-gray-700 cursor-pointer mb-4'
+              className='w-7 h-7 text-gray-600 cursor-pointer mb-4 sm:hidden'
               onClick={() => setsidebar(true)}
             />
           )
