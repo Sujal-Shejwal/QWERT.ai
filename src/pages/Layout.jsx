@@ -17,7 +17,7 @@ const Layout = () => {
       {/* Top Navbar */}
       <div className='h-16 border-b border-gray-200 px-4 flex items-center justify-between bg-white'>
 
-        <img
+        <img className='cursor-pointer w-32 sm:w-44'
           src={assets.logo}
           alt="logo"
           className='w-40 cursor-pointer'

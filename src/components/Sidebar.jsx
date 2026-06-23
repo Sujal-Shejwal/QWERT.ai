@@ -1,6 +1,6 @@
 import React from 'react'
-import { useUser } from '@clerk/clerk-react'
-import { House, SquarePen, Hash, Images, Eraser, Scissors, FileText, Users} from 'lucide-react'
+import { useUser, useClerk, Protect } from '@clerk/clerk-react'
+import { House, SquarePen, Hash, Images, Eraser, Scissors, FileText, Users, LogOut} from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 
 const navItems = [
@@ -20,6 +20,7 @@ const navItems = [
 const Sidebar = ({ sidebar }) => {
 
   const { user, isLoaded } = useUser()
+  const {signOut, openUserProfile} = useClerk()
 
   console.log("USER:", user)
 
@@ -65,9 +66,21 @@ const Sidebar = ({ sidebar }) => {
 
       </div>
 
-      <div className='w-full border-t border-gray-200 p-4 px-7 flex items-center justify-betweer'>
-        <div></div>
+      <div className='w-full border-t border-gray-200 p-4 px-7 flex items-center justify-between'>
+        <div onClick={openUserProfile} className='flex items-center gap-2 cursor-pointer'>
+          <img src={user.imageUrl} className='w-8 rounded-full' alt=""/>
+          <div>
+            <h1 className='text-sm font-medium text-gray-700'>
+              {user.fullName}
+            </h1>
+            <p className='text-xs text-gray-500'>
+                 <Protect plan='premium' fallback="Free" >Premium</Protect>
+                 Plan
+            </p>
+          </div>
 
+        </div>
+        <LogOut onClick={signOut} className='w-4.5 text-gray-400 hover:text-gray-700 transaction cursor-pointer'/>
       </div>
 
     </div>
