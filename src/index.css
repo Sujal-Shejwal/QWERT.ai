@@ -8,3 +8,16 @@
 @theme{
     --color-primary: #5044E5;
 }
+
+.reset-tw, .reset-tw *{
+   all: revert !important;
+}
+
+.cl-rootBox,
+.cl-modalRoot,
+.cl-drawerRoot,
+.cl-modalBackdrop,
+.cl-modalContent,
+.cl-card {
+    z-index: 99999 !important;
+}

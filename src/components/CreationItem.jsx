@@ -28,7 +28,7 @@ const [expanded, setExpanded] = useState(false)
               </div>
             ) : (
               <div className='mt-3 h-full overflow-y-scroll text-sm text-slate-700'>
-                <div>
+                <div className='reset-tw'>
                   <ReactMarkdown>{item.content}</ReactMarkdown>
                   
                 </div>
