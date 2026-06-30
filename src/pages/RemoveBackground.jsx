@@ -4,8 +4,6 @@ import React, { useState } from 'react'
 const RemoveBackground = () => {
 
 
-
-
      const [input, setInput] = useState('')
    
      const onSubmitHandler = async (e) => {
