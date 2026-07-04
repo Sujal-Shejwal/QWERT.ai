@@ -1,6 +1,8 @@
 import OpenAI from "openai";
 import sql from "../configs/db.js";
 import { clerkClient } from "@clerk/express";
+import axios from "axios";
+import FormData from "form-data";
 
 const AI = new OpenAI({
     apiKey: process.env.GEMINI_API_KEY,
@@ -128,7 +130,22 @@ export const generateImage = async (req, res) => {
             });
         }
 
+        const formData = new FormData();
+        formData.append('prompt', prompt);
 
+        const response = await axios.post(
+            "https://clipdrop-api.co/text-to-image/v1",
+            formData,
+            {
+                headers: {
+                    ...formData.getHeaders(),
+                    'x-api-key': process.env.CLIPDROP_API_KEY,
+                },
+                responseType: 'arraybuffer',
+            }
+        );
+
+        const content = response.data;
 
         await sql`
             INSERT INTO creations (user_id, prompt, content, type)
@@ -138,7 +155,7 @@ export const generateImage = async (req, res) => {
         if (plan !== 'premium') {
             await clerkClient.users.updateUserMetadata(userId, {
                 privateMetadata: {
-                    free_usage: free_usage + 1
+                    free_usage: req.free_usage + 1
                 }
             });
         }
