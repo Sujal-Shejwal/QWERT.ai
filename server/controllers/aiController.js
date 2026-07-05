@@ -133,7 +133,7 @@ export const generateImage = async (req, res) => {
         const formData = new FormData();
         formData.append('prompt', prompt);
 
-        const response = await axios.post(
+        const{data} = await axios.post(
             "https://clipdrop-api.co/text-to-image/v1",
             formData,
             {
@@ -145,7 +145,10 @@ export const generateImage = async (req, res) => {
             }
         );
 
-        const content = response.data;
+        const base64Image = `data.image/png;base64,${Buffer.from(data, 'binary').toString('base64')}`;
+
+
+        
 
         await sql`
             INSERT INTO creations (user_id, prompt, content, type)
