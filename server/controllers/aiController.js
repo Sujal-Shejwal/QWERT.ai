@@ -238,8 +238,8 @@ return res.json({
 
 
 // Remove Image Background
-export const removeimagebackground = async (req, res) => {
-    try {
+export const removeImageBackground = async (req, res) => {
+try {
         const { userId } = req.auth();
         const plan = req.plan;
         const { publish } = req.body;
@@ -338,7 +338,7 @@ export const removeimagebackground = async (req, res) => {
 };
 
 // Remove Object
-export const removeImageObject = async (req, res) => {
+export const removeImageobject = async (req, res) => {
     try {
         const { userId } = req.auth();
         const plan = req.plan;
@@ -422,8 +422,8 @@ export const removeImageObject = async (req, res) => {
 };
 
 // Review Resume
-export const reviewResume = async (req, res) => {
-    try {
+export const resumeReview = async (req, res) => {
+        try {
 
         const { userId } = req.auth();
         const plan = req.plan;
