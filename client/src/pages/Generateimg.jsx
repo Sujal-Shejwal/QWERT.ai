@@ -1,5 +1,8 @@
 import React, { useState } from 'react'
 import { Image, Sparkles } from 'lucide-react'
+import axios from "axios";
+import { useAuth } from "@clerk/clerk-react";
+
 
 const Generateimg = () => {
 
@@ -17,11 +20,33 @@ const Generateimg = () => {
     const [selectedStyle, setSelectedStyle] = useState('Realistic')
     const [input, setInput] = useState('')
     const [publish, setPublish] = useState(false)
-  
-    const onSubmitHandler = async (e) => {
-      e.preventDefault()
-    }
+    const { getToken } = useAuth();  
 
+    const onSubmitHandler = async (e) => {
+    e.preventDefault();
+
+    try {
+        const token = await getToken();
+
+        const { data } = await axios.post(
+            "http://localhost:3000/api/ai/generate-image",
+            {
+                prompt: `${input} in the style ${selectedStyle}`,
+                publish
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+
+        console.log(data);
+
+    } catch (error) {
+        console.log(error);
+    }
+}
   return (
        <div className='h-full p-6 flex items-start gap-6 text-slate-700'>
 
