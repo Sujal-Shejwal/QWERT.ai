@@ -3,6 +3,8 @@ import { Edit, Sparkles } from 'lucide-react'
 import axios from 'axios'
 import { useAuth } from '@clerk/clerk-react'
 import { toast } from "react-hot-toast";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
@@ -27,8 +29,20 @@ const WriteArticle = () => {
     try {
       setLoading(true)
 
-      const prompt = `Write an article about ${input} in ${selectedlength.length} text`
+    const prompt = `
+Write a professional blog article on "${input}".
 
+Requirements:
+- Length: approximately ${selectedlength.length} words.
+- Use Markdown.
+- Include a title.
+- Include an introduction.
+- Include at least 8 detailed headings.
+- Explain every heading thoroughly.
+- Add examples wherever appropriate.
+- End with a conclusion.
+- Do NOT stop until approximately ${selectedlength.length} words are completed.
+`;
       const { data } = await axios.post(
         '/api/ai/generate-article',
         {
@@ -134,7 +148,11 @@ const WriteArticle = () => {
           </div>
         ) : (
           <div className='mt-3 h-full overflow-y-scroll text-sm text-slate-600'>
-            <div>{content}</div>
+            <div className='reset-tw'>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {content || ""}
+              </ReactMarkdown>
+             </div>
           </div>
         )}
 

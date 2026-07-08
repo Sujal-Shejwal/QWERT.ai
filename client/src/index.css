@@ -1,5 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@100..900&family=Roboto:ital,wght@0,100..900&display=swap');
+
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 *{
     font-family: "Outfit", sans-serif;
@@ -9,15 +11,19 @@
     --color-primary: #5044E5;
 }
 
-.reset-tw, .reset-tw *{
-   all: revert !important;
+/* REMOVE this block */
+/*
+.reset-tw,
+.reset-tw *{
+    all: revert !important;
 }
+*/
 
 .cl-rootBox,
 .cl-modalRoot,
 .cl-drawerRoot,
 .cl-modalBackdrop,
 .cl-modalContent,
-.cl-card {
-    z-index: 99999 !important;
+.cl-card{
+    z-index:99999 !important;
 }

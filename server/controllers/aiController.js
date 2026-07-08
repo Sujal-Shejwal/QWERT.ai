@@ -26,6 +26,18 @@ export const generateArticle = async (req, res) => {
                 message: "Free usage limit reached. Please upgrade to premium plan."
             });
         }
+         
+        let maxTokens = 1000;
+
+if (length === 800) {
+    maxTokens = 1000;
+}
+else if (length === 1200) {
+    maxTokens = 1800;
+}
+else if (length === 1600) {
+    maxTokens = 2800;
+}
 
         const response = await AI.chat.completions.create({
             model: "gemini-2.5-flash",
@@ -36,7 +48,7 @@ export const generateArticle = async (req, res) => {
                 }
             ],
             temperature: 0.7,
-            max_tokens: length
+            max_tokens: maxTokens
         });
 
         const content = response.choices[0].message.content;
@@ -66,7 +78,6 @@ export const generateArticle = async (req, res) => {
 };
 
 // generate blog title
-
 export const generateBlogTitle = async (req, res) => {
     try {
         const { userId } = req.auth();
@@ -74,33 +85,107 @@ export const generateBlogTitle = async (req, res) => {
         const plan = req.plan;
         const free_usage = req.free_usage;
 
-        if (plan !== 'premium' && free_usage >= 10) {
+        if (plan !== "premium" && free_usage >= 10) {
             return res.json({
                 success: false,
-                message: "Free usage limit reached. Please upgrade to premium plan."
+                message: "Free usage limit reached. Please upgrade to Premium."
             });
         }
+
+        const finalPrompt = `
+You are an expert SEO Blog Title Generator.
+
+Generate professional blog title ideas for:
+
+${prompt}
+
+=========================
+OUTPUT FORMAT (IMPORTANT)
+=========================
+
+Return ONLY Markdown.
+
+Your response MUST follow EXACTLY this format.
+
+# Generated Titles
+
+Here are a few blog title options based on the keyword and category.
+
+## Beginner-Friendly
+
+- Title 1
+- Title 2
+- Title 3
+- Title 4
+- Title 5
+
+## Intermediate
+
+- Title 6
+- Title 7
+- Title 8
+- Title 9
+- Title 10
+
+## Advanced
+
+- Title 11
+- Title 12
+- Title 13
+- Title 14
+- Title 15
+
+=========================
+RULES
+=========================
+
+- Generate EXACTLY 15 titles.
+- Use Markdown headings.
+- Every title MUST begin with "- ".
+- Every title MUST be unique.
+- Every title MUST contain the keyword naturally.
+- Make every title SEO friendly.
+- Make every title click-worthy.
+- Use different wording for every title.
+- Beginner titles should be easy.
+- Intermediate titles should be practical.
+- Advanced titles should sound professional.
+- Do NOT repeat any title.
+- Do NOT stop before all 15 titles are generated.
+- Do NOT write explanations.
+- Do NOT write notes.
+- Do NOT write anything outside this format.
+`;
 
         const response = await AI.chat.completions.create({
             model: "gemini-2.5-flash",
             messages: [
                 {
+                    role: "system",
+                    content:
+                        "You are a professional SEO content writer. Always return valid Markdown exactly as instructed."
+                },
+                {
                     role: "user",
-                    content: prompt,
+                    content: finalPrompt
                 }
             ],
-            temperature: 0.7,
-            max_tokens: 100,
+            temperature: 0.9,
+            max_tokens: 1800
         });
 
         const content = response.choices[0].message.content;
-
+        console.log("========== AI RESPONSE ==========");
+        console.log(content);
+        console.log("=================================");
+         
+        
         await sql`
             INSERT INTO creations (user_id, prompt, content, type)
             VALUES (${userId}, ${prompt}, ${content}, 'blog-title')
         `;
 
-        if (plan !== 'premium') {
+        if (plan !== "premium") {
             await clerkClient.users.updateUserMetadata(userId, {
                 privateMetadata: {
                     free_usage: free_usage + 1
@@ -108,10 +193,14 @@ export const generateBlogTitle = async (req, res) => {
             });
         }
 
-        res.json({ success: true, content });
+        res.json({
+            success: true,
+            content
+        });
 
     } catch (error) {
-        console.log(error.message);
+        console.log(error);
+
         res.json({
             success: false,
             message: error.message
