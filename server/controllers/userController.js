@@ -1,99 +1,95 @@
 import sql from "../configs/db.js";
 
+// Get current user's creations
 export const getUserCreation = async (req, res) => {
-    try {
-        const { userId } = req.auth();
+  try {
+    const { userId } = req.auth();
 
-        const creation = await sql`
-            SELECT * FROM creation
-            WHERE users_id = ${userId}
-            ORDER BY created_at DESC
-        `;
+    const creations = await sql`
+      SELECT *
+      FROM creations
+      WHERE user_id = ${userId}
+      ORDER BY created_at DESC
+    `;
 
-        res.json({
-            success: true,
-            creation
-        });
-
-    } catch (error) {
-        res.json({
-            success: false,
-            message: error.message
-        });
-    }
+    res.json({
+      success: true,
+      creations,
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
+// Get all published creations
 export const getPublishedCreation = async (req, res) => {
-    try {
+  try {
+    const creations = await sql`
+      SELECT *
+      FROM creations
+      WHERE publish = true
+      ORDER BY created_at DESC
+    `;
 
-        const creation = await sql`
-            SELECT * FROM creation
-            WHERE publish = true
-            ORDER BY created_at DESC
-        `;
-
-        res.json({
-            success: true,
-            creation
-        });
-
-    } catch (error) {
-        res.json({
-            success: false,
-            message: error.message
-        });
-    }
+    res.json({
+      success: true,
+      creations,
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
+// Like / Unlike creation
 export const toggleLikeCreation = async (req, res) => {
-    try {
+  try {
+    const { userId } = req.auth();
+    const { id } = req.body;
 
-        const { userId } = req.auth();
-        const { id } = req.body;
+    const [creation] = await sql`
+      SELECT *
+      FROM creations
+      WHERE id = ${id}
+    `;
 
-        const [creation] = await sql`
-            SELECT * FROM creation
-            WHERE id = ${id}
-        `;
-
-        if (!creation) {
-            return res.json({
-                success: false,
-                message: "Creation not found"
-            });
-        }
-
-        const currentLikes = creation.likes;
-        const userIdStr = userId.toString();
-
-        let updatedLikes;
-        let message;
-
-        if (currentLikes.includes(userIdStr)) {
-            updatedLikes = currentLikes.filter((user) => user !== userIdStr);
-            message = "Creation unliked";
-        } else {
-            updatedLikes = [...currentLikes, userIdStr];
-            message = "Creation liked";
-        }
-
-        const formattedArray = `{${updatedLikes.join(",")}}`;
-
-        await sql`
-            UPDATE creation
-            SET likes = ${formattedArray}::text[]
-            WHERE id = ${id}
-        `;
-
-        res.json({
-            success: true,
-            message
-        });
-
-    } catch (error) {
-        res.json({
-            success: false,
-            message: error.message
-        });
+    if (!creation) {
+      return res.json({
+        success: false,
+        message: "Creation not found",
+      });
     }
+
+    const currentLikes = creation.likes || [];
+    const user = userId.toString();
+
+    let updatedLikes;
+
+    if (currentLikes.includes(user)) {
+      updatedLikes = currentLikes.filter((item) => item !== user);
+    } else {
+      updatedLikes = [...currentLikes, user];
+    }
+
+    await sql`
+      UPDATE creations
+      SET likes = ${updatedLikes}
+      WHERE id = ${id}
+    `;
+
+    res.json({
+      success: true,
+      message: "Updated successfully",
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
 };

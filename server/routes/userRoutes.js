@@ -10,7 +10,7 @@ const userRouter = express.Router();
 
 userRouter.get("/get-user-creation", auth, getUserCreation);
 
-userRouter.get("/get-publish-creation", auth, getPublishedCreation);
+userRouter.get("/get-published-creations", auth, getPublishedCreation);
 
 userRouter.post("/toggle-like-creation", auth, toggleLikeCreation);
 
