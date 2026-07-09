@@ -1,66 +1,157 @@
-import { useUser } from '@clerk/clerk-react'
-import React, { useState, useEffect } from 'react'
-import { dummyPublishedCreationData } from '../assets/assets'
-import { Heart } from 'lucide-react'
+import React, { useEffect, useState } from "react";
+import { useAuth, useUser } from "@clerk/clerk-react";
+import { Heart } from "lucide-react";
+import axios from "axios";
+import toast from "react-hot-toast";
+
+axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
 const Community = () => {
+  const [creations, setCreations] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [creation, setCreation] = useState([])
-  const { user } = useUser()
+  const { user } = useUser();
+  const { getToken } = useAuth();
 
-  const fetchCreation = async () => {
-    setCreation(dummyPublishedCreationData)
-  }
+  const fetchCreations = async () => {
+    try {
+      const { data } = await axios.get(
+        "/api/user/get-published-creations",
+        {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        }
+      );
+
+      if (data.success) {
+        setCreations(data.creations);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const imageLikeToggle = async (id) => {
+    try {
+      const { data } = await axios.post(
+        "/api/user/toggle-like-creation",
+        { id },
+        {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        }
+      );
+
+      if (data.success) {
+        await fetchCreations();
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
+    }
+  };
 
   useEffect(() => {
     if (user) {
-      fetchCreation()
+      fetchCreations();
     }
-  }, [user])
+  }, [user]);
+
+  // Loading Spinner
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-full">
+        <span className="w-10 h-10 rounded-full border-4 border-[#8E37EB] border-t-transparent animate-spin"></span>
+      </div>
+    );
+  }
 
   return (
-    <div className='flex-1 h-full flex flex-col gap-4 p-6'>
-      Creations
+    <div className="flex-1 h-full flex flex-col gap-4 p-6">
+      <h1 className="text-2xl font-semibold">
+        Community Creations
+      </h1>
 
-      <div className='bg-white h-full w-full rounded-xl overflow-y-scroll'>
-        {creation.map((creation, index) => (
-          <div
-            key={index}
-            className='relative group inline-block pl-3 pt-3 w-full sm:max-w-1/2 lg:max-w-1/3'
-          >
-            <img
-              src={creation.content}
-              alt=""
-              className='w-full h-full object-cover rounded-lg'
-            />
+      <div className="bg-white rounded-xl p-4 overflow-y-auto h-full">
 
-            <div
-              className='absolute bottom-0 top-0 right-0 left-3 flex gap-2 items-end
-              justify-end group-hover:justify-between p-3 group-hover:bg-gradient-to-b
-              from-transparent to-black/80 text-white rounded-lg'
-            >
-              <p className='text-sm hidden group-hover:block'>
-                {creation.prompt}
-              </p>
+        {creations.length === 0 ? (
 
-              <div className='flex gap-1 items-center'>
-                <p>{creation.likes.length}</p>
+          <div className="flex items-center justify-center h-full text-gray-500">
+            No published creations found.
+          </div>
 
-                <Heart
-                  className={`min-w-5 h-5 hover:scale-110 cursor-pointer ${
-                    creation.likes.includes(user?.id)
-                      ? 'fill-red-500 text-red-600'
-                      : 'text-white'
-                  }`}
+        ) : (
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+            {creations.map((creation) => (
+
+              <div
+                key={creation.id}
+                className="relative rounded-xl overflow-hidden shadow-md group"
+              >
+
+                <img
+                  src={creation.content}
+                  alt={creation.prompt}
+                  className="w-full h-72 object-cover"
                 />
+
+                <div
+                  className="
+                  absolute inset-0
+                  bg-gradient-to-t from-black/80 to-transparent
+                  opacity-0 group-hover:opacity-100
+                  transition duration-300
+                  flex flex-col justify-end
+                  p-4 text-white"
+                >
+
+                  <p className="text-sm mb-3 line-clamp-3">
+                    {creation.prompt}
+                  </p>
+
+                  <div className="flex items-center justify-between">
+
+                    <div className="flex items-center gap-2">
+
+                      <Heart
+                        onClick={() => imageLikeToggle(creation.id)}
+                        className={`w-6 h-6 cursor-pointer transition duration-200 ${
+                          creation.likes?.includes(user?.id)
+                            ? "fill-red-500 text-red-500"
+                            : "text-white hover:text-red-400"
+                        }`}
+                      />
+
+                      <span>
+                        {creation.likes?.length || 0}
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
               </div>
-            </div>
+
+            ))}
 
           </div>
-        ))}
+
+        )}
+
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Community
+export default Community;
