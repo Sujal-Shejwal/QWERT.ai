@@ -39,17 +39,80 @@ else if (length === 1600) {
     maxTokens = 2800;
 }
 
-        const response = await AI.chat.completions.create({
-            model: "gemini-2.5-flash",
-            messages: [
-                {
-                    role: "user",
-                    content: prompt,
-                }
-            ],
-            temperature: 0.7,
-            max_tokens: maxTokens
-        });
+          const finalPrompt = `
+You are an expert technical content writer.
+
+${prompt}
+
+IMPORTANT INSTRUCTIONS
+
+- Write BETWEEN ${length} and ${length + 200} words.
+- NEVER write fewer than ${length} words.
+- Return ONLY Markdown.
+- Do NOT stop before reaching the minimum word count.
+
+Formatting Rules:
+
+# Article Title
+
+Write a detailed introduction.
+
+Then create AT LEAST 8 major headings.
+
+For EACH heading follow this format:
+
+## Heading
+
+- Point 1
+- Point 2
+- Point 3
+- Point 4
+
+Explain EVERY point in 3-5 detailed sentences.
+
+Also include whenever appropriate:
+
+- Examples
+- Advantages
+- Disadvantages
+- Best Practices
+- Tips
+- Real-world applications
+- FAQs
+
+End with:
+
+## Conclusion
+
+- Key Takeaways
+- Final Thoughts
+
+IMPORTANT
+
+- Never write huge paragraphs.
+- Use bullet points.
+- Use numbered lists.
+- Use bold text.
+- Use tables if appropriate.
+- Continue writing until at least ${length} words are completed.
+`;
+
+const response = await AI.chat.completions.create({
+    model: "gemini-2.5-flash",
+    messages: [
+        {
+            role: "system",
+            content:
+                "You are a professional technical writer. Always obey the requested word count and return only Markdown."
+        },
+        {
+            role: "user",
+            content: finalPrompt
+        }
+    ],
+    temperature: 0.6,
+    max_tokens: 5000
+});
 
         const content = response.choices[0].message.content;
 
